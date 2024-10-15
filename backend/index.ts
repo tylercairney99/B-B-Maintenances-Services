@@ -9,13 +9,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow dynamic origins from Vercel frontend deployments
+// Allowed origins (Include all your Vercel deployments here)
 const allowedOrigins = [
   'https://b-b-maintenances-services.vercel.app',
-  'https://b-b-maintenances-services-p7awg5pc-tylers-projects-f53a2000.vercel.app',
+  'https://b-b-maintenances-services-git-master-tylers-projects-f53a2000.vercel.app',
+  'https://b-b-maintenances-services-4e78z7oyz-tylers-projects-f53a2000.vercel.app',
 ];
 
-// **CORS Middleware with Preflight Handling**
+// **CORS Middleware**
 app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin as string;
   if (allowedOrigins.includes(origin)) {
@@ -25,14 +26,14 @@ app.use((req: Request, res: Response, next: NextFunction) => {
       'Access-Control-Allow-Headers',
       'Origin, X-Requested-With, Content-Type, Accept, Authorization'
     );
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   }
-  
+
   // Handle preflight request
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(204); // Preflight successful
+    return res.sendStatus(204); // Success for preflight
   }
-  
+
   next();
 });
 
@@ -105,7 +106,7 @@ app.get('/api/payment_summaries', async (req: Request, res: Response) => {
 app.listen(PORT, (err?: Error) => {
   if (err) {
     console.error(`Failed to start server on port ${PORT}:`, err);
-    process.exit(1); // Exit if there’s an error
+    process.exit(1); // Exit if there's an error
   }
   console.log(`Server is running on http://localhost:${PORT}`);
 });
