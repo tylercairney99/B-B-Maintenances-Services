@@ -38,6 +38,7 @@
     "start:backend": "node backend/dist/index.js",
     "build:backend": "tsc -p backend/tsconfig.json"
   },
+  
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.17",
@@ -57,5 +58,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+
+
+  "engines": {
+  "node": "20.x"
+}
+  
 }
