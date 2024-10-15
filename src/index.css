@@ -1,12 +1,8 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
+/* index.css */
 body {
-  background-color: #f4f4f4;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
   color: #333;
 }
 
@@ -16,8 +12,57 @@ body {
   padding: 20px;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
+.summary-container {
+  margin-top: 20px;
+  text-align: center;
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 5px;
+}
+
+.app-container {
+  padding: 20px;
+}
+
+nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.content {
+  margin-top: 20px;
+}
+
+.pay-period-list {
+  margin-top: 10px;
+}
+
+.pay-period {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* index.css */
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  background-color: #007bff;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
 }

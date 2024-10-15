@@ -1,0 +1,47 @@
+/* app.css */
+
+header {
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 1.5rem;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem 0;
+  background-color: #f7f7f7;
+  margin-top: 2rem;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #888;
+}
+
+/* Media Query for smaller screens (mobile & tablets) */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem;
+  }
+
+  .calendar-container {
+    margin-top: 1rem;
+    padding: 0.5rem;
+  }
+
+  .summary-container {
+    padding: 1rem;
+  }
+
+  h1, h2, h3 {
+    font-size: 1.2rem;
+  }
+
+  button {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
