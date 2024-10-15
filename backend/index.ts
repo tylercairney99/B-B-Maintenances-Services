@@ -1,34 +1,38 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 const mysql = require('mysql2/promise');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-dotenv.config(); // Load environment variables
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow dynamic origin from multiple frontend URLs (Vercel projects)
+// Allow dynamic origins from multiple Vercel URLs
 const allowedOrigins = [
-  'https://b-b-maintenances-services.vercel.app',  // Main frontend
-  'https://b-b-maintenances-services-1h3alu236-tylers-projects-f53a2000.vercel.app' // New deployment
+  'https://b-b-maintenances-services.vercel.app', // Primary deployment
+  'https://b-b-maintenances-services-1h3alu236-tylers-projects-f53a2000.vercel.app' // Alternate deployment
 ];
 
-app.use(cors({
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true); // Allow the request
-    } else {
-      callback(new Error('Not allowed by CORS')); // Block the request
-    }
-  },
-  credentials: true, // Allow credentials (cookies or custom headers)
-}));
+// CORS middleware with dynamic origin handling
+app.use(
+  cors({
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow the request
+      } else {
+        callback(new Error('Not allowed by CORS')); // Block the request
+      }
+    },
+    credentials: true, // Allow credentials (if needed for authentication)
+  })
+);
 
+// Middleware to parse JSON request bodies
+app.use(express.json());
 
-app.use(express.json()); // Parse JSON request bodies
-
-// Create MySQL connection pool
+// MySQL connection pool configuration
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -40,6 +44,7 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
+// Logging MySQL config for troubleshooting
 console.log('MySQL Config:', {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -48,7 +53,16 @@ console.log('MySQL Config:', {
   port: process.env.DB_PORT,
 });
 
-// **Root Route**
+// Error-handling middleware for CORS issues
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err.message === 'Not allowed by CORS') {
+    console.error('Blocked by CORS policy:', req.headers.origin);
+    return res.status(401).json({ error: 'CORS policy: Unauthorized origin' });
+  }
+  next(err);
+});
+
+// **Root Route** - Verify backend is running
 app.get('/', (req: Request, res: Response) => {
   res.send('Backend is running successfully!');
 });
@@ -94,7 +108,7 @@ app.get('/api/payment_summaries', async (req: Request, res: Response) => {
 app.listen(PORT, (err?: Error) => {
   if (err) {
     console.error(`Failed to start server on port ${PORT}:`, err);
-    process.exit(1); // Exit the process if it fails
+    process.exit(1); // Exit the process on error
   }
   console.log(`Server is running on http://localhost:${PORT}`);
 });
