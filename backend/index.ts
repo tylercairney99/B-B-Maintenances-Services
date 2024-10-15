@@ -8,13 +8,17 @@ dotenv.config(); // Load environment variables
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors({ origin: 'https://b-b-maintenances-services.vercel.app/' }));
+// Middleware - CORS configuration for your Vercel frontend
+app.use(cors({
+  origin: 'https://b-b-maintenances-services.vercel.app', // Replace with your frontend URL
+  credentials: true, // Allow credentials (if using cookies or headers)
+}));
+
 app.use(express.json()); // Parse JSON request bodies
 
 // Create MySQL connection pool
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST, // Host provided by Railway
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -31,7 +35,6 @@ console.log('MySQL Config:', {
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
 });
-
 
 // **Root Route**
 app.get('/', (req: Request, res: Response) => {
@@ -75,6 +78,7 @@ app.get('/api/payment_summaries', async (req: Request, res: Response) => {
   }
 });
 
+// Start the server
 app.listen(PORT, (err?: Error) => {
   if (err) {
     console.error(`Failed to start server on port ${PORT}:`, err);
