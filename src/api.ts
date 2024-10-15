@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000'; // Update this if your backend is deployed
+const API_URL = 'https://b-b-maintenances-services.onrender.com'; // Update this if your backend is deployed
 
 // Fetch all events
 export const getEvents = async () => {
