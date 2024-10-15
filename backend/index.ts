@@ -9,29 +9,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allowed origins (Include all your Vercel deployments here)
+// Allow dynamic origins from Vercel deployments
 const allowedOrigins = [
   'https://b-b-maintenances-services.vercel.app',
-  'https://b-b-maintenances-services-git-master-tylers-projects-f53a2000.vercel.app',
-  'https://b-b-maintenances-services-4e78z7oyz-tylers-projects-f53a2000.vercel.app',
+  'https://b-b-maintenances-services-9e2ixqbqs-tylers-projects-f53a2000.vercel.app', // Ensure new URLs are listed
 ];
 
-// **CORS Middleware**
+// **CORS Configuration**
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const origin = req.headers.origin as string;
-  if (allowedOrigins.includes(origin)) {
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   }
 
-  // Handle preflight request
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(204); // Success for preflight
+    return res.sendStatus(204); // Preflight request success
   }
 
   next();
@@ -40,7 +35,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Middleware to parse JSON
 app.use(express.json());
 
-// **MySQL Pool Configuration**
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -50,14 +44,6 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-});
-
-console.log('MySQL Config:', {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
 });
 
 // **Root Route** - Test if backend is running
@@ -91,22 +77,11 @@ app.post('/api/events', async (req: Request, res: Response) => {
   }
 });
 
-// **Fetch Payment Summaries**
-app.get('/api/payment_summaries', async (req: Request, res: Response) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM payment_summaries');
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching payment summaries:', error);
-    res.status(500).json({ error: 'Failed to fetch payment summaries' });
-  }
-});
-
 // **Start the Server**
 app.listen(PORT, (err?: Error) => {
   if (err) {
     console.error(`Failed to start server on port ${PORT}:`, err);
-    process.exit(1); // Exit if there's an error
+    process.exit(1);
   }
   console.log(`Server is running on http://localhost:${PORT}`);
 });
