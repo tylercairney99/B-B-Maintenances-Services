@@ -9,40 +9,35 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow dynamic origin from Vercel frontend deployments
+// Allow dynamic origins from Vercel frontend deployments
 const allowedOrigins = [
   'https://b-b-maintenances-services.vercel.app',
-  'https://b-b-maintenances-services-1h3alu236-tylers-projects-f53a2000.vercel.app',
-  'https://b-b-maintenances-services-5x74cl4v9-tylers-projects-f53a2000.vercel.app'
+  'https://b-b-maintenances-services-p7awg5pc-tylers-projects-f53a2000.vercel.app',
 ];
 
-// **CORS Configuration**
-app.use(
-  cors({
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      console.log(`Request from origin: ${origin}`); // Debugging line
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // Allow request
-      } else {
-        console.error(`Blocked by CORS policy: ${origin}`); // Log the blocked origin
-        callback(new Error('Not allowed by CORS')); // Block request
-      }
-    },
-    credentials: true, // Allow cookies or credentials
-  })
-);
+// **CORS Middleware with Preflight Handling**
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin as string;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  }
+  
+  // Handle preflight request
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204); // Preflight successful
+  }
+  
+  next();
+});
 
 // Middleware to parse JSON
 app.use(express.json());
-
-// Error-handling middleware for CORS
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err.message === 'Not allowed by CORS') {
-    console.error('CORS error:', err.message);
-    return res.status(401).json({ error: 'CORS policy: Unauthorized origin' });
-  }
-  next(err);
-});
 
 // **MySQL Pool Configuration**
 const pool = mysql.createPool({
