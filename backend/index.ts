@@ -9,30 +9,42 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow dynamic origins from multiple Vercel URLs
+// Allow dynamic origin from Vercel frontend deployments
 const allowedOrigins = [
-  'https://b-b-maintenances-services.vercel.app', // Primary deployment
-  'https://b-b-maintenances-services-1h3alu236-tylers-projects-f53a2000.vercel.app' // Alternate deployment
+  'https://b-b-maintenances-services.vercel.app',
+  'https://b-b-maintenances-services-1h3alu236-tylers-projects-f53a2000.vercel.app',
+  'https://b-b-maintenances-services-5x74cl4v9-tylers-projects-f53a2000.vercel.app'
 ];
 
-// CORS middleware with dynamic origin handling
+// **CORS Configuration**
 app.use(
   cors({
     origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      console.log(`Request from origin: ${origin}`); // Debugging line
       if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // Allow the request
+        callback(null, true); // Allow request
       } else {
-        callback(new Error('Not allowed by CORS')); // Block the request
+        console.error(`Blocked by CORS policy: ${origin}`); // Log the blocked origin
+        callback(new Error('Not allowed by CORS')); // Block request
       }
     },
-    credentials: true, // Allow credentials (if needed for authentication)
+    credentials: true, // Allow cookies or credentials
   })
 );
 
-// Middleware to parse JSON request bodies
+// Middleware to parse JSON
 app.use(express.json());
 
-// MySQL connection pool configuration
+// Error-handling middleware for CORS
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err.message === 'Not allowed by CORS') {
+    console.error('CORS error:', err.message);
+    return res.status(401).json({ error: 'CORS policy: Unauthorized origin' });
+  }
+  next(err);
+});
+
+// **MySQL Pool Configuration**
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -44,7 +56,6 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-// Logging MySQL config for troubleshooting
 console.log('MySQL Config:', {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -53,21 +64,12 @@ console.log('MySQL Config:', {
   port: process.env.DB_PORT,
 });
 
-// Error-handling middleware for CORS issues
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err.message === 'Not allowed by CORS') {
-    console.error('Blocked by CORS policy:', req.headers.origin);
-    return res.status(401).json({ error: 'CORS policy: Unauthorized origin' });
-  }
-  next(err);
-});
-
-// **Root Route** - Verify backend is running
+// **Root Route** - Test if backend is running
 app.get('/', (req: Request, res: Response) => {
   res.send('Backend is running successfully!');
 });
 
-// Route: Get all events
+// **Get All Events**
 app.get('/api/events', async (req: Request, res: Response) => {
   try {
     const [rows] = await pool.query('SELECT * FROM events');
@@ -78,7 +80,7 @@ app.get('/api/events', async (req: Request, res: Response) => {
   }
 });
 
-// Route: Add a new event
+// **Add New Event**
 app.post('/api/events', async (req: Request, res: Response) => {
   const { office_id, employee_id, event_date } = req.body;
   try {
@@ -93,7 +95,7 @@ app.post('/api/events', async (req: Request, res: Response) => {
   }
 });
 
-// Route: Fetch payment summaries
+// **Fetch Payment Summaries**
 app.get('/api/payment_summaries', async (req: Request, res: Response) => {
   try {
     const [rows] = await pool.query('SELECT * FROM payment_summaries');
@@ -104,11 +106,11 @@ app.get('/api/payment_summaries', async (req: Request, res: Response) => {
   }
 });
 
-// Start the server
+// **Start the Server**
 app.listen(PORT, (err?: Error) => {
   if (err) {
     console.error(`Failed to start server on port ${PORT}:`, err);
-    process.exit(1); // Exit the process on error
+    process.exit(1); // Exit if there’s an error
   }
   console.log(`Server is running on http://localhost:${PORT}`);
 });
