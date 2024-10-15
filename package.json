@@ -35,7 +35,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start:backend": "ts-node backend/index.ts"
+    "start:backend": "node backend/index.js",
+    "build:backend": "tsc -p backend/tsconfig.json"
+
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
