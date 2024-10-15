@@ -12,25 +12,27 @@ const PORT = process.env.PORT || 5000;
 // Allow dynamic origins from Vercel deployments
 const allowedOrigins = [
   'https://b-b-maintenances-services.vercel.app',
-  'https://b-b-maintenances-services-9e2ixqbqs-tylers-projects-f53a2000.vercel.app', // Ensure new URLs are listed
+  'https://b-b-maintenances-services-git-master-tylers-projects-f53a2000.vercel.app',
+  'https://b-b-maintenances-services-4e78z7oyz-tylers-projects-f53a2000.vercel.app',
 ];
 
-// **CORS Configuration**
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   }
-
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(204); // Preflight request success
+    return res.sendStatus(204); // Preflight OK
   }
-
   next();
 });
+
 
 // Middleware to parse JSON
 app.use(express.json());
