@@ -8,17 +8,28 @@ dotenv.config(); // Load environment variables
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware - CORS configuration for your Vercel frontend
+// Allow dynamic origin from multiple frontend URLs (Vercel projects)
+const allowedOrigins = [
+  'https://b-b-maintenances-services.vercel.app',  // Main frontend
+  'https://b-b-maintenances-services-1h3alu236-tylers-projects-f53a2000.vercel.app' // New deployment
+];
+
 app.use(cors({
-  origin: 'https://b-b-maintenances-services.vercel.app', // Replace with your frontend URL
-  credentials: true, // Allow credentials (if using cookies or headers)
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow cookies or headers
 }));
 
 app.use(express.json()); // Parse JSON request bodies
 
 // Create MySQL connection pool
 const pool = mysql.createPool({
-  host: process.env.DB_HOST, // Host provided by Railway
+  host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
