@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // Use your Render backend URL
-const API_URL = 'https://b-b-maintenances-services.onrender.com';
+const API_URL = 'https://cors-anywhere.herokuapp.com/https://b-b-maintenances-services.onrender.com';
+
 
 // Fetch all events
 export const getEvents = async () => {
