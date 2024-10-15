@@ -8,7 +8,6 @@ const API_URL = 'https://cors-anywhere.herokuapp.com/https://b-b-maintenances-se
 export const getEvents = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/events`, {
-      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -24,7 +23,6 @@ export const addEvent = async (office_id: number, employee_id: number, event_dat
       `${API_URL}/api/events`,
       { office_id, employee_id, event_date },
       {
-        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
         },
