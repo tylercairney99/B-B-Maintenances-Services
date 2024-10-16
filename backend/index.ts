@@ -37,7 +37,6 @@ const pool = mysql.createPool({
   connectTimeout: 10000, // 10 seconds
 });
 
-
 console.log('MySQL Config:', {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -49,6 +48,19 @@ console.log('MySQL Config:', {
 // **Root Route** - Test if backend is running
 app.get('/', (req: Request, res: Response) => {
   res.send('Backend is running successfully!');
+});
+
+// **Test Database Connection Route**
+app.get('/api/db-test', async (req: Request, res: Response) => {
+  try {
+    const connection = await pool.getConnection();
+    await connection.ping(); // Test the connection
+    connection.release();
+    res.send('Database connection successful!');
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
 });
 
 // **Get All Events**
