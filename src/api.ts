@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-// Backend URL hosted on Render
+// Use your Render backend URL
 const API_URL = 'https://b-b-maintenances-services.onrender.com';
 
-// **Fetch All Events**
+// Fetch all events
 export const getEvents = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/events`);
@@ -14,12 +14,8 @@ export const getEvents = async () => {
   }
 };
 
-// **Add New Event**
-export const addEvent = async (
-  office_id: number,
-  employee_id: number,
-  event_date: string
-) => {
+// Add a new event
+export const addEvent = async (office_id: number, employee_id: number, event_date: string) => {
   try {
     const response = await axios.post(
       `${API_URL}/api/events`,
