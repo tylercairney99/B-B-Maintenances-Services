@@ -10,7 +10,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // **Allow All Requests (Temporary)**
-app.use(cors()); // Enables CORS for all origins and requests
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'Content-Type', 'Accept'],
+  })
+);
 
 // Optionally, handle OPTIONS requests globally
 app.options('*', cors());
@@ -28,7 +34,9 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  connectTimeout: 10000, // 10 seconds
 });
+
 
 console.log('MySQL Config:', {
   host: process.env.DB_HOST,
