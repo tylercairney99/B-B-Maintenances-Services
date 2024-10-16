@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Use your Render backend URL
-const API_URL = 'https://b-b-maintenances-services.onrender.com/api';
+const API_URL = 'https://b-b-maintenances-services.onrender.com';
 
 
 
