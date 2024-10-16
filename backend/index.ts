@@ -9,17 +9,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// **Allow All Requests (Temporary)**
+// **Allow CORS**
 app.use(
   cors({
-    origin: '*',
+    origin: ['https://b-b-maintenances-services.vercel.app'], // Vercel frontend
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Origin', 'Content-Type', 'Accept'],
+    allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization'],
+    credentials: true, // Allow credentials (optional)
   })
 );
-
-// Optionally, handle OPTIONS requests globally
-app.options('*', cors());
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -37,20 +35,20 @@ const pool = mysql.createPool({
   connectTimeout: 10000, // 10 seconds
 });
 
+// **Log MySQL Configuration**
 console.log('MySQL Config:', {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
 });
 
-// **Root Route** - Test if backend is running
+// **Root Route** - Test backend status
 app.get('/', (req: Request, res: Response) => {
   res.send('Backend is running successfully!');
 });
 
-// **Test Database Connection Route**
+// **Database Connection Test**
 app.get('/api/db-test', async (req: Request, res: Response) => {
   try {
     const connection = await pool.getConnection();
@@ -104,7 +102,7 @@ app.get('/api/payment_summaries', async (req: Request, res: Response) => {
 app.listen(PORT, (err?: Error) => {
   if (err) {
     console.error(`Failed to start server on port ${PORT}:`, err);
-    process.exit(1); // Exit if there’s an error
+    process.exit(1);
   }
   console.log(`Server is running on http://localhost:${PORT}`);
 });
