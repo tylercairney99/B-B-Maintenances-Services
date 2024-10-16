@@ -23,7 +23,7 @@ app.use(
 app.use(express.json());
 
 // **MySQL Pool Configuration**
-const pool = mysql.createPool(process.env.DATABASE_URL);
+const pool = mysql.createPool(process.env.DATABASE_URL + '?ssl={"rejectUnauthorized":true}');
 
 
 // **Log MySQL Configuration**
